@@ -1,6 +1,7 @@
 {
   "domain": "garmin_mapshare",
   "name": "Garmin MapShare",
+  "version": "0.1.0",
   "codeowners": [
     "@BHSPitMonkey"
   ],
