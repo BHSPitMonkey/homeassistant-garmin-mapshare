@@ -1,0 +1,15 @@
+{
+  "domain": "garmin_mapshare",
+  "name": "Garmin MapShare",
+  "codeowners": [
+    "@BHSPitMonkey"
+  ],
+  "config_flow": true,
+  "dependencies": [],
+  "documentation": "https://www.home-assistant.io/integrations/garmin_mapshare",
+  "homekit": {},
+  "iot_class": "cloud_polling",
+  "requirements": [],
+  "ssdp": [],
+  "zeroconf": []
+}
