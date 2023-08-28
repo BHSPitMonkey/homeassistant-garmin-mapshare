@@ -42,6 +42,17 @@ SENSOR_TYPES: dict[str, SensorEntityDescription] = {
         icon="mdi:elevation-rise",
         # unit_type=UnitOfLength.METERS,
     ),
+    "Course": SensorEntityDescription(
+        key="course",
+        translation_key="elevation",
+        icon="mdi:elevation-rise",
+    ),
+    "Velocity": SensorEntityDescription(
+        key="velocity",
+        translation_key="elevation",
+        icon="mdi:elevation-rise",
+        # unit_type=UnitOfSpeed.KILOMETERS_PER_HOUR
+    ),
     "Text": SensorEntityDescription(
         key="last_text",
         translation_key="last_text",

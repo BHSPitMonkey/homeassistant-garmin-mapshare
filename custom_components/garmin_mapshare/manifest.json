@@ -1,7 +1,6 @@
 {
   "domain": "garmin_mapshare",
   "name": "Garmin MapShare",
-  "version": "0.1.0",
   "codeowners": [
     "@BHSPitMonkey"
   ],
@@ -10,7 +9,9 @@
   "documentation": "https://www.home-assistant.io/integrations/garmin_mapshare",
   "homekit": {},
   "iot_class": "cloud_polling",
+  "integration_type": "device",
   "requirements": [],
   "ssdp": [],
+  "version": "0.1.0",
   "zeroconf": []
 }
