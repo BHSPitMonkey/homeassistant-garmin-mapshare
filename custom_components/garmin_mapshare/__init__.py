@@ -63,19 +63,18 @@ class MapShareBaseEntity(CoordinatorEntity[MapShareCoordinator]):
         map_display = coordinator.raw_values.get("Map Display Name", "I18N ME: Unknown")
         imei = coordinator.raw_values.get("IMEI", "I18N ME: Unknown")
 
-        # self.vehicle = vehicle
-
         self._attrs: dict[str, str] = {
             "id": ident,
             "display_name": map_display,
             "imei": imei,
         }
-        _LOGGER.warning("Doin the thing")
+
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, ident)},
             manufacturer="Garmin",
             model=model,
             name=model,
+            configuration_url=f"https://share.garmin.com/share/{coordinator.map_link_name}",
         )
 
     async def async_added_to_hass(self) -> None:
