@@ -10,6 +10,7 @@
   "homekit": {},
   "iot_class": "cloud_polling",
   "integration_type": "device",
+  "issue_tracker": "https://github.com/BHSPitMonkey/homeassistant-garmin-mapshare/issues",
   "requirements": [],
   "ssdp": [],
   "version": "0.1.0",

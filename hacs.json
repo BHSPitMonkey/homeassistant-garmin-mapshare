@@ -1,6 +1,5 @@
 {
   "name": "Garmin MapShare",
   "homeassistant": "2023.9.0",
-  "issue_tracker": "https://github.com/BHSPitMonkey/homeassistant-garmin-mapshare/issues",
   "render_readme": true
 }
