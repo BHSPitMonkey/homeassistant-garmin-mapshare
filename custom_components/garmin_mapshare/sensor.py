@@ -5,12 +5,11 @@ import logging
 from typing import cast
 
 from homeassistant.components.sensor import (
-    SensorDeviceClass,
     SensorEntity,
     SensorEntityDescription,
 )
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import DEGREE, LENGTH, UnitOfLength
+from homeassistant.const import DEGREE, UnitOfLength, UnitOfSpeed
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import StateType
@@ -21,50 +20,55 @@ from .coordinator import MapShareCoordinator
 
 _LOGGER = logging.getLogger(__name__)
 
-SENSOR_TYPES: dict[str, SensorEntityDescription] = {
-    "Latitude": SensorEntityDescription(
+def float_from_first_word(text: str) -> float:
+    if str == "":
+        return None
+    return float(text.split()[0])
+
+SENSOR_TYPES: dict[str, tuple[SensorEntityDescription, callable]] = {
+    "Latitude": (SensorEntityDescription(
         key="latitude",
         translation_key="latitude",
-        # unit_type=DEGREE,
+        native_unit_of_measurement=DEGREE,
         icon="mdi:latitude",
         entity_registry_enabled_default=False,
-    ),
-    "Longitude": SensorEntityDescription(
+    ), float),
+    "Longitude": (SensorEntityDescription(
         key="longitude",
         translation_key="longitude",
-        # unit_type=DEGREE,
+        native_unit_of_measurement=DEGREE,
         icon="mdi:longitude",
         entity_registry_enabled_default=False,
-    ),
-    "Elevation": SensorEntityDescription(
+    ), float),
+    "Elevation": (SensorEntityDescription(
         key="elevation",
         translation_key="elevation",
         icon="mdi:elevation-rise",
-        # unit_type=UnitOfLength.METERS,
-    ),
-    "Course": SensorEntityDescription(
+        native_unit_of_measurement=UnitOfLength.METERS,
+    ), float_from_first_word),
+    "Course": (SensorEntityDescription(
         key="course",
         translation_key="elevation",
+        native_unit_of_measurement=DEGREE,
         icon="mdi:elevation-rise",
-    ),
-    "Velocity": SensorEntityDescription(
+    ), float_from_first_word),
+    "Velocity": (SensorEntityDescription(
         key="velocity",
         translation_key="elevation",
         icon="mdi:elevation-rise",
-        # unit_type=UnitOfSpeed.KILOMETERS_PER_HOUR
-    ),
-    "Text": SensorEntityDescription(
+        native_unit_of_measurement=UnitOfSpeed.KILOMETERS_PER_HOUR
+    ), float_from_first_word),
+    "Text": (SensorEntityDescription(
         key="last_text",
         translation_key="last_text",
         icon="mdi:message-text",
-    ),
-    "Event": SensorEntityDescription(
+    ), None),
+    "Event": (SensorEntityDescription(
         key="last_event",
         translation_key="last_event",
         icon="mdi:history",
-    ),
+    ), None),
 }
-
 
 async def async_setup_entry(
     hass: HomeAssistant,
@@ -77,7 +81,7 @@ async def async_setup_entry(
     entities: list[MapShareSensor] = []
     entities.extend(
         [
-            MapShareSensor(coordinator, description)
+            MapShareSensor(coordinator, attribute_name, description[0], description[1])
             for attribute_name in coordinator.raw_values.keys()
             if (description := SENSOR_TYPES.get(attribute_name))
         ]
@@ -89,16 +93,22 @@ class MapShareSensor(MapShareBaseEntity, SensorEntity):
     """Representation of a MapShare sensor."""
 
     entity_description: SensorEntityDescription
+    kml_key: str
+    transformer: callable
 
     def __init__(
         self,
         coordinator: MapShareCoordinator,
+        kml_key: str,
         description: SensorEntityDescription,
+        transformer: callable = None
     ) -> None:
         """Initialize MapShare sensor."""
         super().__init__(coordinator)
         _LOGGER.warning("Sensor time baby: %s %s", description.key, description)
         self.entity_description = description
+        self.kml_key = kml_key
+        self.transformer = transformer
         self._attr_unique_id = f"{coordinator.map_link_name}-{description.key}"
         self._attr_name = description.key
 
@@ -112,8 +122,13 @@ class MapShareSensor(MapShareBaseEntity, SensorEntity):
     @callback
     def _handle_coordinator_update(self) -> None:
         """Handle updated data from the coordinator."""
-        _LOGGER.debug("Updating sensor '%s'", self.entity_description.key)
-        state = self.coordinator.raw_values.get(self.entity_description.key)
+        key = self.entity_description.key
+        _LOGGER.debug("Updating sensor '%s' from KML key '%s'", key, self.kml_key)
+        
+        # Get (and maybe transform) state value
+        state = self.coordinator.raw_values.get(self.kml_key)
+        if callable(self.transformer):
+            state = self.transformer(state)
 
         # self._attr_native_value = cast(
         #     StateType, self.entity_description.value(state, self.hass)
