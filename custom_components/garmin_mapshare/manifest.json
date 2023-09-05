@@ -6,7 +6,7 @@
   ],
   "config_flow": true,
   "dependencies": [],
-  "documentation": "https://www.home-assistant.io/integrations/garmin_mapshare",
+  "documentation": "https://github.com/BHSPitMonkey/homeassistant-garmin-mapshare#readme",
   "homekit": {},
   "iot_class": "cloud_polling",
   "integration_type": "device",
