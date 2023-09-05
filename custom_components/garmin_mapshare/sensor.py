@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 import logging
 from typing import cast
 
@@ -25,49 +24,49 @@ def float_from_first_word(text: str) -> float:
         return None
     return float(text.split()[0])
 
-SENSOR_TYPES: dict[str, tuple[SensorEntityDescription, callable]] = {
+SENSOR_TYPES: dict[str, tuple[SensorEntityDescription, callable, str]] = {
     "Latitude": (SensorEntityDescription(
         key="latitude",
         translation_key="latitude",
         native_unit_of_measurement=DEGREE,
         icon="mdi:latitude",
         entity_registry_enabled_default=False,
-    ), float),
+    ), float, None),
     "Longitude": (SensorEntityDescription(
         key="longitude",
         translation_key="longitude",
         native_unit_of_measurement=DEGREE,
         icon="mdi:longitude",
         entity_registry_enabled_default=False,
-    ), float),
+    ), float, None),
     "Elevation": (SensorEntityDescription(
         key="elevation",
         translation_key="elevation",
         icon="mdi:elevation-rise",
         native_unit_of_measurement=UnitOfLength.METERS,
-    ), float_from_first_word),
+    ), float_from_first_word, None),
     "Course": (SensorEntityDescription(
         key="course",
         translation_key="elevation",
         native_unit_of_measurement=DEGREE,
-        icon="mdi:elevation-rise",
-    ), float_from_first_word),
+        icon="mdi:compass",
+    ), float_from_first_word, None),
     "Velocity": (SensorEntityDescription(
         key="velocity",
         translation_key="elevation",
-        icon="mdi:elevation-rise",
+        icon="mdi:speedometer",
         native_unit_of_measurement=UnitOfSpeed.KILOMETERS_PER_HOUR
-    ), float_from_first_word),
+    ), float_from_first_word, None),
     "Text": (SensorEntityDescription(
         key="last_text",
         translation_key="last_text",
         icon="mdi:message-text",
-    ), None),
+    ), None, "Last Text"),
     "Event": (SensorEntityDescription(
         key="last_event",
         translation_key="last_event",
         icon="mdi:history",
-    ), None),
+    ), None, "Last Event"),
 }
 
 async def async_setup_entry(
@@ -81,7 +80,7 @@ async def async_setup_entry(
     entities: list[MapShareSensor] = []
     entities.extend(
         [
-            MapShareSensor(coordinator, attribute_name, description[0], description[1])
+            MapShareSensor(coordinator, attribute_name, description[0], description[1], description[2])
             for attribute_name in coordinator.raw_values.keys()
             if (description := SENSOR_TYPES.get(attribute_name))
         ]
@@ -101,7 +100,8 @@ class MapShareSensor(MapShareBaseEntity, SensorEntity):
         coordinator: MapShareCoordinator,
         kml_key: str,
         description: SensorEntityDescription,
-        transformer: callable = None
+        transformer: callable = None,
+        override_name: str = None,
     ) -> None:
         """Initialize MapShare sensor."""
         super().__init__(coordinator)
@@ -110,14 +110,9 @@ class MapShareSensor(MapShareBaseEntity, SensorEntity):
         self.kml_key = kml_key
         self.transformer = transformer
         self._attr_unique_id = f"{coordinator.map_link_name}-{description.key}"
-        self._attr_name = description.key
-
-        # Set the correct unit of measurement based on the unit_type
-        # if description.unit_type:
-        #     self._attr_native_unit_of_measurement = (
-        #         coordinator.hass.config.units.as_dict().get(description.unit_type)
-        #         or description.unit_type
-        #     )
+        self._attr_name = kml_key
+        if override_name is not None:
+            self._attr_name = override_name
 
     @callback
     def _handle_coordinator_update(self) -> None:

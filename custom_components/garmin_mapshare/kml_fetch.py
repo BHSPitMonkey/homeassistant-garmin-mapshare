@@ -33,14 +33,13 @@ class KmlFetch:
 
         # Parse response and populate data key/value pairs
         # TODO: Parse and return the lat/lon, altitude, last update timestamp, ID, Name, Map Display Name, Device Type, IMEI, Velocity, Incident ID, Course, In Emergency, Text, Event
-        _LOGGER.warning("Found me some xml: %s", r.text)
+        _LOGGER.debug("Fetched KML data: %s", r.text)
         root = ET.fromstring(r.text)
-        _LOGGER.warning("Found me some ET: %s", root)
+        _LOGGER.debug("Parsed KML: %s", root)
 
         xmlns_prefix = "{http://www.opengis.net/kml/2.2}"
 
         data = root.find(f".//{xmlns_prefix}ExtendedData")
-        _LOGGER.warning("Found me some extdata: %s", data)  # None!
 
         values = dict()
         for el in data.iter(f"{xmlns_prefix}Data"):
@@ -53,5 +52,5 @@ class KmlFetch:
                 value = ""
             values[name] = value
 
-        _LOGGER.warning("Found me some values: %s", values)
+        _LOGGER.debug("Extracted raw KML values: %s", values)
         return values

@@ -1,5 +1,4 @@
 from __future__ import annotations
-import logging
 
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.helpers.entity import DeviceInfo
@@ -22,10 +21,10 @@ class MapShareBaseEntity(CoordinatorEntity[MapShareCoordinator]):
         """Initialize entity."""
         super().__init__(coordinator)
 
-        model = coordinator.raw_values.get("Device Type", "I18N ME: Unknown")
-        ident = coordinator.raw_values.get("Id", "I18N ME: Unknown")
-        map_display = coordinator.raw_values.get("Map Display Name", "I18N ME: Unknown")
-        imei = coordinator.raw_values.get("IMEI", "I18N ME: Unknown")
+        model = coordinator.raw_values.get("Device Type", "Unknown")
+        ident = coordinator.raw_values.get("Id", "Unknown")
+        map_display = coordinator.raw_values.get("Map Display Name", "Unknown")
+        imei = coordinator.raw_values.get("IMEI", "Unknown")
 
         self._attrs: dict[str, str] = {
             "id": ident,
@@ -39,7 +38,7 @@ class MapShareBaseEntity(CoordinatorEntity[MapShareCoordinator]):
             identifiers={(DOMAIN, ident)},
             manufacturer="Garmin",
             model=model,
-            name=model,
+            name=name,
             configuration_url=f"https://share.garmin.com/share/{coordinator.map_link_name}",
         )
 

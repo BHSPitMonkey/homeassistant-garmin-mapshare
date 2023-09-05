@@ -47,7 +47,7 @@ class MapShareCoordinator(DataUpdateCoordinator):
 
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry) -> None:
         """Initialize my coordinator."""
-        _LOGGER.warning("MapShareCoordinator: %s", entry.data)
+        _LOGGER.debug("MapShareCoordinator: %s", entry.data)
 
         self.mapshare = KmlFetch(
             hass, entry.data[CONF_LINK_NAME], entry.data.get(CONF_LINK_PASSWORD)
