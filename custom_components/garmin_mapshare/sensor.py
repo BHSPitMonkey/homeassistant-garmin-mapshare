@@ -14,9 +14,9 @@ from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import StateType
 
-from . import MapShareBaseEntity
 from .const import DOMAIN
 from .coordinator import MapShareCoordinator
+from .entity import MapShareBaseEntity
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -105,7 +105,7 @@ class MapShareSensor(MapShareBaseEntity, SensorEntity):
     ) -> None:
         """Initialize MapShare sensor."""
         super().__init__(coordinator)
-        _LOGGER.warning("Sensor time baby: %s %s", description.key, description)
+        _LOGGER.debug("Sensor init: %s %s", description.key, description)
         self.entity_description = description
         self.kml_key = kml_key
         self.transformer = transformer

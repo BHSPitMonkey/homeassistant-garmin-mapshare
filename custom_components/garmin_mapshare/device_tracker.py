@@ -8,9 +8,9 @@ from homeassistant.core import HomeAssistant, callback
 from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from . import MapShareBaseEntity
 from .const import DOMAIN
 from .coordinator import MapShareCoordinator
+from .entity import MapShareBaseEntity
 
 _LOGGER = logging.getLogger(__name__)
 
