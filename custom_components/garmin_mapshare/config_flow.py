@@ -19,7 +19,7 @@ _LOGGER = logging.getLogger(__name__)
 STEP_USER_DATA_SCHEMA = vol.Schema(
     {
         vol.Required(CONF_LINK_NAME): str,
-        vol.Required(CONF_LINK_PASSWORD): str,
+        vol.Optional(CONF_LINK_PASSWORD): str,
     }
 )
 
@@ -37,7 +37,7 @@ async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str,
     #     your_validate_func, data["username"], data["password"]
     # )
 
-    hub = KmlFetch(hass, data[CONF_LINK_NAME], data[CONF_LINK_PASSWORD])
+    hub = KmlFetch(hass, data[CONF_LINK_NAME], data.get(CONF_LINK_PASSWORD, None))
     if not await hub.authenticate():
         raise InvalidAuth
 

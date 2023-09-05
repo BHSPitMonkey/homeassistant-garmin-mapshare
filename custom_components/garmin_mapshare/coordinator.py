@@ -50,7 +50,7 @@ class MapShareCoordinator(DataUpdateCoordinator):
         _LOGGER.warning("MapShareCoordinator: %s", entry.data)
 
         self.mapshare = KmlFetch(
-            hass, entry.data[CONF_LINK_NAME], entry.data[CONF_LINK_PASSWORD]
+            hass, entry.data[CONF_LINK_NAME], entry.data.get(CONF_LINK_PASSWORD)
         )
         self.map_link_name: str = entry.data[CONF_LINK_NAME]
         self.raw_values: dict[str, str] = dict()

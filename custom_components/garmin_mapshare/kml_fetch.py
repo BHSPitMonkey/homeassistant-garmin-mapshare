@@ -23,9 +23,13 @@ class KmlFetch:
     async def fetch_data(self):
         url = BASE_URL + self.link_name
 
+        auth=None
+        if self.link_password != None:
+            auth=("", self.link_password)
+
         # Try to download (httpx?)
         async with self.httpx as client:
-            r = await client.get(url, auth=("", self.link_password))
+            r = await client.get(url, auth=auth)
 
         # Parse response and populate data key/value pairs
         # TODO: Parse and return the lat/lon, altitude, last update timestamp, ID, Name, Map Display Name, Device Type, IMEI, Velocity, Incident ID, Course, In Emergency, Text, Event
