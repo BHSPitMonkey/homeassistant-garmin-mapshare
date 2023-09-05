@@ -3,15 +3,14 @@ from __future__ import annotations
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.helpers.entity import DeviceInfo
 
-from .const import DOMAIN
+from .const import DATA_ATTRIBUTION, DOMAIN, MANUFACTURER, WEB_BASE_URL
 from .coordinator import MapShareCoordinator
 
 class MapShareBaseEntity(CoordinatorEntity[MapShareCoordinator]):
     """Common base for MapShare entities."""
 
     coordinator: MapShareCoordinator
-    # _attr_attribution = ATTRIBUTION
-    _attr_attribution = "Garmin MapShare"
+    _attr_attribution = DATA_ATTRIBUTION
     _attr_has_entity_name = True
 
     def __init__(
@@ -36,10 +35,10 @@ class MapShareBaseEntity(CoordinatorEntity[MapShareCoordinator]):
 
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, ident)},
-            manufacturer="Garmin",
+            manufacturer=MANUFACTURER,
             model=model,
             name=name,
-            configuration_url=f"https://share.garmin.com/share/{coordinator.map_link_name}",
+            configuration_url=f"{WEB_BASE_URL}{coordinator.map_link_name}",
         )
 
     async def async_added_to_hass(self) -> None:

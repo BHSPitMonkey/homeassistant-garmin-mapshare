@@ -11,7 +11,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.exceptions import HomeAssistantError
 
-from .const import DOMAIN, CONF_LINK_NAME, CONF_LINK_PASSWORD
+from .const import DOMAIN, CONF_LINK_NAME, CONF_LINK_PASSWORD, PRODUCT_NAME
 from .kml_fetch import KmlFetch
 
 _LOGGER = logging.getLogger(__name__)
@@ -47,7 +47,7 @@ async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str,
     # InvalidAuth
 
     # Return info that you want to store in the config entry.
-    return {"title": "Garmin MapShare"}
+    return {"title": PRODUCT_NAME}
 
 
 class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
