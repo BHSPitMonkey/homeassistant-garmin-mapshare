@@ -6,8 +6,9 @@ Integrate sensors in Home Assistant derived from one or more Garmin MapShare fee
 
 ## Description
 
-Given a user's MapShare link name and password, this custom component will periodically pull data from their KML feed 
-and create a handful of entities in Home Assistant based on the state reported from an inReach satellite communicator.
+Given a user's MapShare link name and (if required) password, this custom component will periodically pull data from
+their KML feed and create a handful of entities in Home Assistant based on the state reported from an inReach
+satellite communicator.
 
 **Please note:** This does not use the username and password that the Garmin owner uses to log in. Instead, it uses
 the data from the user's MapShare profile on https://share.garmin.com/ assuming the owner has turned the MapShare
@@ -47,30 +48,28 @@ The `device_tracker` entity represents the current GPS coordinates, and will app
 
 ### Binary Sensor
 
-(Not yet implemented)
-
-| Name          | Entity Name | Description         |
-| ------------- | ----------- | ------------------- |
-| In Emergency  | TBD         | *Needs description* |
-| Valid GPS Fix | TBD         | *Needs description* |
+| Name          | Entity Name   | Description         |
+| ------------- | ------------- | ------------------- |
+| In Emergency  | in_emergency  | *Needs description* |
+| Valid GPS Fix | valid_gps_fix | *Needs description* |
 
 ### Sensor
 
-| Name      | Entity name  | Description                               | Example state                |
-| --------- | ------------ | ----------------------------------------- | ---------------------------- | 
-| Elevation | `elevation`  | Elevation from GPS                        | 1628.12 m                    |
-| Course    | `course`     | Course based on GPS movement              | "22.50 ° True"               |
-| Velocity  | `velocity`   | Velocity based on GPS movement            | 6.0 km/h                     |
-| Text      | `last_text`  | *Needs description*                       | ""                           |
-| Event     | `last_event` | (Disabled by default) *Needs description* | "Tracking message received." |
-| Latitude  | `latitude`   | (Disabled by default)                     | 37.728345 °                  |
-| Longitude | `longitude`  | (Disabled by default)                     | -119.637130 °                |
+| Name       | Entity name  | Description                               | Example state                |
+| ---------- | ------------ | ----------------------------------------- | ---------------------------- | 
+| Elevation  | `elevation`  | Elevation from GPS                        | 1628.12 m                    |
+| Course     | `course`     | Course based on GPS movement              | 22.50 °                      |
+| Velocity   | `velocity`   | Velocity based on GPS movement            | 6.0 km/h                     |
+| Last Text  | `last_text`  | *Needs description*                       | ""                           |
+| Last Event | `last_event` | (Disabled by default) *Needs description* | "Tracking message received." |
+| Latitude   | `latitude`   | (Disabled by default)                     | 37.728345 °                  |
+| Longitude  | `longitude`  | (Disabled by default)                     | -119.637130 °                |
 
 Entities denoted as "disabled by default" are disabled because they are redundant or considered less useful, but they
 can be enabled by the user from the device page if desired.
 
 ## Development Status
 
-This integration in its starting state is the result of a random weekend work session.
+This integration in its starting state is the result of a random weekend work session or two.
 It's my first Home Assistant integration, and it shows.
 Pull requests are very welcome!

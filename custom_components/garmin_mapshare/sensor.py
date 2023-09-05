@@ -66,6 +66,7 @@ SENSOR_TYPES: dict[str, tuple[SensorEntityDescription, callable, str]] = {
         key="last_event",
         translation_key="last_event",
         icon="mdi:history",
+        entity_registry_enabled_default=False,
     ), None, "Last Event"),
 }
 
@@ -124,9 +125,6 @@ class MapShareSensor(MapShareBaseEntity, SensorEntity):
         state = self.coordinator.raw_values.get(self.kml_key)
         if callable(self.transformer):
             state = self.transformer(state)
-
-        # self._attr_native_value = cast(
-        #     StateType, self.entity_description.value(state, self.hass)
-        # )
+        
         self._attr_native_value = cast(StateType, state)
         super()._handle_coordinator_update()
