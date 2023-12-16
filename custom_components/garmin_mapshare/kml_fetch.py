@@ -23,34 +23,46 @@ class KmlFetch:
     async def fetch_data(self):
         url = BASE_URL + self.link_name
 
-        auth=None
+        auth = None
         if self.link_password != None:
-            auth=("", self.link_password)
+            auth = ("", self.link_password)
 
         # Try to download (httpx?)
         async with self.httpx as client:
             r = await client.get(url, auth=auth)
+        r.raise_for_status()
 
-        # Parse response and populate data key/value pairs
-        # TODO: Parse and return the lat/lon, altitude, last update timestamp, ID, Name, Map Display Name, Device Type, IMEI, Velocity, Incident ID, Course, In Emergency, Text, Event
-        _LOGGER.debug("Fetched KML data: %s", r.text)
-        root = ET.fromstring(r.text)
-        _LOGGER.debug("Parsed KML: %s", root)
+        # Make sure response is not empty
+        body = r.text
+        if len(body) == 0:
+            raise ValueError(
+                f"Received empty response from {url} using auth: {bool(auth)}"
+            )
 
-        xmlns_prefix = "{http://www.opengis.net/kml/2.2}"
+        return parse_response(body)
 
-        data = root.find(f".//{xmlns_prefix}ExtendedData")
 
-        values = dict()
-        for el in data.iter(f"{xmlns_prefix}Data"):
-            name = el.attrib["name"]
-            value_el = el.find(f"{xmlns_prefix}value")
-            if value_el is not None:
-                last_el = value_el
-                value = value_el.text
-            else:
-                value = ""
-            values[name] = value
+def parse_response(body: str):
+    """Parse response and populate data key/value pairs"""
+    # TODO: Parse and return the lat/lon, altitude, last update timestamp, ID, Name, Map Display Name, Device Type, IMEI, Velocity, Incident ID, Course, In Emergency, Text, Event
+    _LOGGER.debug("Fetched KML data: %s", body)
+    root = ET.fromstring(body)
+    _LOGGER.debug("Parsed KML: %s", root)
 
-        _LOGGER.debug("Extracted raw KML values: %s", values)
-        return values
+    xmlns_prefix = "{http://www.opengis.net/kml/2.2}"
+
+    data = root.find(f".//{xmlns_prefix}ExtendedData")
+
+    values = dict()
+    for el in data.iter(f"{xmlns_prefix}Data"):
+        name = el.attrib["name"]
+        value_el = el.find(f"{xmlns_prefix}value")
+        if value_el is not None:
+            last_el = value_el
+            value = value_el.text
+        else:
+            value = ""
+        values[name] = value
+
+    _LOGGER.debug("Extracted raw KML values: %s", values)
+    return values
