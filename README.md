@@ -1,6 +1,7 @@
 # 🗺️  Garmin MapShare (Custom Integration for Home Assistant)
 
-[![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg?style=for-the-badge)](https://github.com/hacs/integration)
+[![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg?style=for-the-badge)](https://github.com/hacs/integration)
+![Version](https://img.shields.io/github/v/release/BHSPitMonkey/homeassistant-garmin-mapshare?style=for-the-badge)
 
 Integrate sensors in Home Assistant derived from one or more Garmin MapShare feeds
 
@@ -19,14 +20,12 @@ having to use the MapShare web interface (or to create automations based on Zone
 
 ## Installation
 
-Add this repository using [HACS](https://hacs.xyz/):
+Find this integration in [HACS](https://hacs.xyz/), or use the button below:
 
-```
-https://github.com/BHSPitMonkey/homeassistant-garmin-mapshare
-```
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=BHSPitMonkey&repository=homeassistant-garmin-mapshare)
 
 After a successful installation and restart, you should now be able to add Garmin MapShare from the Integrations
-page in Home Assistant (one or more times).
+page in Home Assistant (once per every MapShare link you wish to track).
 
 ## Configuration
 
