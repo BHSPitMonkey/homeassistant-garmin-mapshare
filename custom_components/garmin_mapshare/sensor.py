@@ -4,6 +4,7 @@ import logging
 from typing import cast
 
 from homeassistant.components.sensor import (
+    SensorDeviceClass,
     SensorEntity,
     SensorEntityDescription,
 )
@@ -44,6 +45,7 @@ SENSOR_TYPES: dict[str, tuple[SensorEntityDescription, callable, str]] = {
         translation_key="elevation",
         icon="mdi:elevation-rise",
         native_unit_of_measurement=UnitOfLength.METERS,
+        device_class=SensorDeviceClass.DISTANCE,
     ), float_from_first_word, None),
     "Course": (SensorEntityDescription(
         key="course",
@@ -55,7 +57,8 @@ SENSOR_TYPES: dict[str, tuple[SensorEntityDescription, callable, str]] = {
         key="velocity",
         translation_key="elevation",
         icon="mdi:speedometer",
-        native_unit_of_measurement=UnitOfSpeed.KILOMETERS_PER_HOUR
+        native_unit_of_measurement=UnitOfSpeed.KILOMETERS_PER_HOUR,
+        device_class=SensorDeviceClass.SPEED,
     ), float_from_first_word, None),
     "Text": (SensorEntityDescription(
         key="last_text",
