@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from datetime import datetime
 from typing import cast
 
 from homeassistant.components.sensor import (
@@ -24,6 +25,10 @@ def float_from_first_word(text: str) -> float:
     if str == "":
         return None
     return float(text.split()[0])
+
+def datetime_from_feed(text: str) -> datetime:
+    dt = datetime.strptime(text + ' +0000', '%m/%d/%Y %I:%M:%S %p %z')
+    return dt
 
 SENSOR_TYPES: dict[str, tuple[SensorEntityDescription, callable, str]] = {
     "Latitude": (SensorEntityDescription(
@@ -71,6 +76,11 @@ SENSOR_TYPES: dict[str, tuple[SensorEntityDescription, callable, str]] = {
         icon="mdi:history",
         entity_registry_enabled_default=False,
     ), None, "Last Event"),
+    "Time UTC": (SensorEntityDescription(
+        key="last_updated",
+        translation_key="last_updated",
+        device_class=SensorDeviceClass.TIMESTAMP,
+    ), datetime_from_feed, "Last Updated"),
 }
 
 async def async_setup_entry(
