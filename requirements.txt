@@ -1,0 +1,5 @@
+pre-commit
+
+async-timeout==4.0.3
+defusedxml==0.7.1
+pytest-homeassistant-custom-component==0.13.85
