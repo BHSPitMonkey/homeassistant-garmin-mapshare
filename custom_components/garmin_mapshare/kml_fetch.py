@@ -51,7 +51,7 @@ class KmlFetch:
 
             # Try to download (httpx?)
             async with self.httpx as client:
-                r = await client.get(url, auth=auth)
+                r = await client.get(url, auth=auth, follow_redirects=True)
             r.raise_for_status()
 
             # Make sure response is not empty
