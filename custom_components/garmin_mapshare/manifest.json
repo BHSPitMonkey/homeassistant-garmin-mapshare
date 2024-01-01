@@ -8,7 +8,7 @@
   "dependencies": [],
   "documentation": "https://github.com/BHSPitMonkey/homeassistant-garmin-mapshare#readme",
   "homekit": {},
-  "integration_type": "device",
+  "integration_type": "hub",
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/BHSPitMonkey/homeassistant-garmin-mapshare/issues",
   "requirements": [],

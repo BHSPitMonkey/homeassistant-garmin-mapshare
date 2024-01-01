@@ -92,13 +92,15 @@ async def async_setup_entry(
     coordinator: MapShareCoordinator = hass.data[DOMAIN][config_entry.entry_id]
 
     entities: list[MapShareSensor] = []
-    entities.extend(
-        [
-            MapShareSensor(coordinator, attribute_name, description[0], description[1], description[2])
-            for attribute_name in coordinator.raw_values.keys()
-            if (description := SENSOR_TYPES.get(attribute_name))
-        ]
-    )
+    for imei in coordinator.raw_values.keys():
+        values = coordinator.raw_values[imei]
+        entities.extend(
+            [
+                MapShareSensor(imei, coordinator, attribute_name, description[0], description[1], description[2])
+                for attribute_name in values.keys()
+                if (description := SENSOR_TYPES.get(attribute_name))
+            ]
+        )
     async_add_entities(entities)
 
 
@@ -111,6 +113,7 @@ class MapShareSensor(MapShareBaseEntity, SensorEntity):
 
     def __init__(
         self,
+        imei: str,
         coordinator: MapShareCoordinator,
         kml_key: str,
         description: SensorEntityDescription,
@@ -118,12 +121,12 @@ class MapShareSensor(MapShareBaseEntity, SensorEntity):
         override_name: str = None,
     ) -> None:
         """Initialize MapShare sensor."""
-        super().__init__(coordinator)
+        super().__init__(imei, coordinator)
         _LOGGER.debug("Sensor init: %s %s", description.key, description)
         self.entity_description = description
         self.kml_key = kml_key
         self.transformer = transformer
-        self._attr_unique_id = f"{coordinator.map_link_name}-{description.key}"
+        self._attr_unique_id = f"{coordinator.map_link_name}-{imei}-{description.key}"
         self._attr_name = kml_key
         if override_name is not None:
             self._attr_name = override_name
@@ -135,7 +138,7 @@ class MapShareSensor(MapShareBaseEntity, SensorEntity):
         _LOGGER.debug("Updating sensor '%s' from KML key '%s'", key, self.kml_key)
         
         # Get (and maybe transform) state value
-        state = self.coordinator.raw_values.get(self.kml_key)
+        state = self.coordinator.raw_values[self.imei].get(self.kml_key)
         if callable(self.transformer):
             state = self.transformer(state)
         

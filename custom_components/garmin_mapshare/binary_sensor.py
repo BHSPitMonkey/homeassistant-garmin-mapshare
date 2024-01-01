@@ -57,10 +57,11 @@ async def async_setup_entry(
     """Set up binary_sensor platform."""
     coordinator: MapShareCoordinator = hass.data[DOMAIN][config_entry.entry_id]
     entities: list[MapShareConnectBinarySensor] = []
-    for description in SENSOR_DESCRIPTIONS:
-        entities.append(
-            MapShareConnectBinarySensor(coordinator, description)
-        )
+    for imei in coordinator.raw_values.keys():
+        for description in SENSOR_DESCRIPTIONS:
+            entities.append(
+                MapShareConnectBinarySensor(imei, coordinator, description)
+            )
     async_add_entities(entities)
     return True
 
@@ -69,20 +70,21 @@ class MapShareConnectBinarySensor(BinarySensorEntity, MapShareBaseEntity):
 
     def __init__(
         self,
+        imei: str,
         coordinator: MapShareCoordinator,
         description: MapShareBinarySensorEntityDescription,
     ) -> None:
         """Initialize the sensor."""
-        super().__init__(coordinator)
+        super().__init__(imei, coordinator)
         self.entity_description: MapShareBinarySensorEntityDescription = description
-        self._attr_unique_id = f"{coordinator.map_link_name}-{description.key}"
+        self._attr_unique_id = f"{coordinator.map_link_name}-{imei}-{description.key}"
         self._attr_name = f"{description.name}"
 
     @property
     def is_on(self) -> bool | None:
         """Return true if the binary sensor is on."""
         if self.entity_description.is_on is not None:
-            return self.entity_description.is_on(self.coordinator.raw_values)
+            return self.entity_description.is_on(self.coordinator.raw_values[self.imei])
         return None
 
     @property

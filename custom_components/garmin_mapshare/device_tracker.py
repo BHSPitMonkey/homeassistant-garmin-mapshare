@@ -23,7 +23,8 @@ async def async_setup_entry(
     """Set up the tracker from config entry."""
     coordinator: MapShareCoordinator = hass.data[DOMAIN][config_entry.entry_id]
     entities: list[MapShareTrackerEntity] = []
-    entities.append(MapShareTrackerEntity(coordinator))
+    for imei in coordinator.raw_values.keys():
+        entities.append(MapShareTrackerEntity(imei, coordinator))
     async_add_entities(entities)
 
 
@@ -41,12 +42,11 @@ class MapShareTrackerEntity(MapShareBaseEntity, TrackerEntity):
     _attr_force_update = False
     _attr_icon = "mdi:satellite-uplink"
 
-    def __init__(self, coordinator: MapShareCoordinator) -> None:
+    def __init__(self, imei: str, coordinator: MapShareCoordinator) -> None:
         """Pass coordinator to CoordinatorEntity."""
-        super().__init__(coordinator)
-        self.coordinator = coordinator
+        super().__init__(imei, coordinator)
 
-        self._attr_unique_id = coordinator.map_link_name
+        self._attr_unique_id = f"{coordinator.map_link_name}-{imei}-tracker"
         self._attr_name = None
 
     @callback
@@ -57,10 +57,11 @@ class MapShareTrackerEntity(MapShareBaseEntity, TrackerEntity):
     @property
     def extra_state_attributes(self) -> dict[str, Any]:
         """Return entity specific state attributes."""
-        elevation = self.coordinator.raw_values.get("Elevation", "I18N ME: Unknown")
-        velocity = self.coordinator.raw_values.get("Velocity", "I18N ME: Unknown")
-        course = self.coordinator.raw_values.get("Course", "I18N ME: Unknown")
-        updated_utc = self.coordinator.raw_values.get("Time UTC", "I18N ME: Unknown")
+        values = self.coordinator.raw_values[self.imei]
+        elevation = values.get("Elevation", "I18N ME: Unknown")
+        velocity = values.get("Velocity", "I18N ME: Unknown")
+        course = values.get("Course", "I18N ME: Unknown")
+        updated_utc = values.get("Time UTC", "I18N ME: Unknown")
         return {
             **self._attrs,
             "elevation": elevation,
@@ -73,7 +74,7 @@ class MapShareTrackerEntity(MapShareBaseEntity, TrackerEntity):
     @property
     def latitude(self) -> float | None:
         """Return latitude value of the device."""
-        lat = self.coordinator.raw_values["Latitude"]
+        lat = self.coordinator.raw_values[self.imei]["Latitude"]
         if len(lat):
             return float(lat)
         return None
@@ -81,7 +82,7 @@ class MapShareTrackerEntity(MapShareBaseEntity, TrackerEntity):
     @property
     def longitude(self) -> float | None:
         """Return longitude value of the device."""
-        lon = self.coordinator.raw_values["Longitude"]
+        lon = self.coordinator.raw_values[self.imei]["Longitude"]
         if len(lon):
             return float(lon)
         return None

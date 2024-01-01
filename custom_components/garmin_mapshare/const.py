@@ -11,3 +11,5 @@ WEB_BASE_URL = "https://share.garmin.com/share/"
 MANUFACTURER = "Garmin"
 PRODUCT_NAME = "Garmin MapShare"
 DATA_ATTRIBUTION = PRODUCT_NAME
+
+MOCK_LINK_NAME = "#dummy"

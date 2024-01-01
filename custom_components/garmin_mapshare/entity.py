@@ -10,23 +10,24 @@ class MapShareBaseEntity(CoordinatorEntity[MapShareCoordinator]):
     """Common base for MapShare entities."""
 
     coordinator: MapShareCoordinator
+    imei: str
     _attr_attribution = DATA_ATTRIBUTION
     _attr_has_entity_name = True
 
     def __init__(
         self,
+        imei: str,
         coordinator: MapShareCoordinator,
     ) -> None:
         """Initialize entity."""
         super().__init__(coordinator)
 
-        model = coordinator.raw_values.get("Device Type", "Unknown")
-        ident = coordinator.raw_values.get("Id", "Unknown")
-        map_display = coordinator.raw_values.get("Map Display Name", "Unknown")
-        imei = coordinator.raw_values.get("IMEI", "Unknown")
+        self.imei = imei
+        values = coordinator.raw_values[imei]
+        model = values.get("Device Type", "Unknown")
+        map_display = values.get("Map Display Name", "Unknown")
 
         self._attrs: dict[str, str] = {
-            "id": ident,
             "display_name": map_display,
             "imei": imei,
         }
@@ -34,7 +35,7 @@ class MapShareBaseEntity(CoordinatorEntity[MapShareCoordinator]):
         name = f"{model} ({map_display})"
 
         self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, ident)},
+            identifiers={(DOMAIN, imei)},
             manufacturer=MANUFACTURER,
             model=model,
             name=name,
