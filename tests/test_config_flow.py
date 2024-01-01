@@ -11,6 +11,7 @@ from homeassistant.data_entry_flow import FlowResultType
 
 pytestmark = pytest.mark.usefixtures("mock_setup_entry")
 
+
 @pytest.mark.skip
 @pytest.mark.asyncio
 async def test_form(hass: HomeAssistant, mock_setup_entry: AsyncMock) -> None:

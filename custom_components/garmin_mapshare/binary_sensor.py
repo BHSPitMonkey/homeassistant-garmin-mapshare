@@ -34,7 +34,7 @@ SENSOR_DESCRIPTIONS: Final[tuple[MapShareBinarySensorEntityDescription, ...]] = 
     MapShareBinarySensorEntityDescription(
         key="in_emergency",
         name="In Emergency",
-        is_on=lambda raw_values: raw_values.get('In Emergency', False) == "True",
+        is_on=lambda raw_values: raw_values.get("In Emergency", False) == "True",
         on_icon="mdi:alert-circle",
         off_icon="mdi:alert-circle",
         device_class=BinarySensorDeviceClass.PROBLEM,
@@ -42,7 +42,7 @@ SENSOR_DESCRIPTIONS: Final[tuple[MapShareBinarySensorEntityDescription, ...]] = 
     MapShareBinarySensorEntityDescription(
         key="valid_gps_fix",
         name="Valid GPS Fix",
-        is_on=lambda raw_values: raw_values.get('Valid GPS Fix', False) == "True",
+        is_on=lambda raw_values: raw_values.get("Valid GPS Fix", False) == "True",
         on_icon="mdi:crosshairs-gps",
         off_icon="mdi:crosshairs",
     ),
@@ -59,15 +59,12 @@ async def async_setup_entry(
     entities: list[MapShareConnectBinarySensor] = []
     for imei in coordinator.raw_values.keys():
         for description in SENSOR_DESCRIPTIONS:
-            entities.append(
-                MapShareConnectBinarySensor(imei, coordinator, description)
-            )
+            entities.append(MapShareConnectBinarySensor(imei, coordinator, description))
     async_add_entities(entities)
     return True
 
 
 class MapShareConnectBinarySensor(BinarySensorEntity, MapShareBaseEntity):
-
     def __init__(
         self,
         imei: str,

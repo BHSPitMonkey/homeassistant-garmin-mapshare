@@ -55,7 +55,7 @@ The `device_tracker` entity represents the current GPS coordinates, and will app
 ### Sensor
 
 | Name       | Entity name  | Description                               | Example state                |
-| ---------- | ------------ | ----------------------------------------- | ---------------------------- | 
+| ---------- | ------------ | ----------------------------------------- | ---------------------------- |
 | Elevation  | `elevation`  | Elevation from GPS                        | 1628.12 m                    |
 | Course     | `course`     | Course based on GPS movement              | 22.50 °                      |
 | Velocity   | `velocity`   | Velocity based on GPS movement            | 6.0 km/h                     |

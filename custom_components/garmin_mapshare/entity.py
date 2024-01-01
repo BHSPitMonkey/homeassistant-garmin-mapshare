@@ -6,6 +6,7 @@ from homeassistant.helpers.entity import DeviceInfo
 from .const import DATA_ATTRIBUTION, DOMAIN, MANUFACTURER, WEB_BASE_URL
 from .coordinator import MapShareCoordinator
 
+
 class MapShareBaseEntity(CoordinatorEntity[MapShareCoordinator]):
     """Common base for MapShare entities."""
 
