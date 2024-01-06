@@ -28,6 +28,24 @@ MOCK_VALUES = {
 }
 
 
+class PasswordRequired(Exception):
+    """Raised after attempting to access a Link without supplying a password, when one is required"""
+
+    pass
+
+
+class PasswordInvalid(Exception):
+    """Raised after attempting to access a Link with an incorrect password supplied"""
+
+    pass
+
+
+class LinkInvalid(Exception):
+    """Raised after likely accessing a Link which does not exist"""
+
+    pass
+
+
 class KmlFetch:
     def __init__(self, hass: HomeAssistant, link_name: str, link_password: str) -> None:
         self.httpx = get_async_client(hass)
@@ -52,14 +70,27 @@ class KmlFetch:
             # Try to download (httpx?)
             async with self.httpx as client:
                 r = await client.get(url, auth=auth, follow_redirects=True)
-            r.raise_for_status()
+
+            body = r.text
+            status_code = r.status_code
+            _LOGGER.debug(
+                f"Feed URL {url} (auth: {bool(auth)}) returned HTTP status {status_code}, body length {len(body)}"
+            )
+
+            if status_code == 401 and auth == None:
+                raise PasswordRequired
+
+            if status_code == 401 and auth != None:
+                raise PasswordInvalid
 
             # Make sure response is not empty
-            body = r.text
-            if len(body) == 0:
-                raise ValueError(
-                    f"Received empty response from {url} using auth: {bool(auth)}"
+            if status_code == 200 and len(body) == 0:
+                _LOGGER.warning(
+                    f"Server returned an empty response. This usually means the MapShare link name is not valid. Make sure you can successfully visit this map at: https://share.garmin.com/{self.link_name}"
                 )
+                raise LinkInvalid
+
+            r.raise_for_status()
 
         return parse_response(body)
 

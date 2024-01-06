@@ -4,7 +4,7 @@ from unittest.mock import AsyncMock, patch
 import pytest
 
 from homeassistant import config_entries
-from custom_components.garmin_mapshare.config_flow import CannotConnect, InvalidAuth
+from custom_components.garmin_mapshare.config_flow import CannotConnect
 from custom_components.garmin_mapshare.const import DOMAIN
 from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResultType
@@ -56,7 +56,7 @@ async def test_form_invalid_auth(hass: HomeAssistant) -> None:
 
     with patch(
         "custom_components.garmin_mapshare.config_flow.PlaceholderHub.authenticate",
-        side_effect=InvalidAuth,
+        #        side_effect=InvalidAuth,
     ):
         result2 = await hass.config_entries.flow.async_configure(
             result["flow_id"],

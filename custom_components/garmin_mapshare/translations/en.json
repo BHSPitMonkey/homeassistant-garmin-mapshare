@@ -6,6 +6,8 @@
         "error": {
             "cannot_connect": "Failed to connect",
             "invalid_auth": "Invalid authentication",
+            "invalid_link": "Server returned an empty response. This usually means the MapShare link name is not valid. Make sure you can successfully visit this map at: https://share.garmin.com/LINK_NAME_HERE",
+            "password_required": "This link requires a password",
             "unknown": "Unexpected error"
         },
         "step": {
