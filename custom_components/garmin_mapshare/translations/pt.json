@@ -1,0 +1,22 @@
+{
+    "config": {
+        "abort": {
+            "already_configured": "Equipamento já configurado"
+        },
+        "error": {
+            "cannot_connect": "Falha na ligação",
+            "invalid_auth": "Falha na autenticação",
+            "invalid_link": "O servidor devolveu uma resposta vazia. Isso geralmente significa que o nome do link MapShare não é válido. Visite este mampa em: https://share.garmin.com/NOME_AQUI",
+            "password_required": "Este link precisa de password",
+            "unknown": "Erro desconhecido"
+        },
+        "step": {
+            "user": {
+                "data": {
+                    "link_name": "Nome do MapShare",
+                    "link_password": "Senha do MapShare Link"
+                }
+            }
+        }
+    }
+}
