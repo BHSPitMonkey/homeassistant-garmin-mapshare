@@ -2,13 +2,14 @@
 from __future__ import annotations
 
 import logging
+import re
 from typing import Any
 
 import voluptuous as vol
 
 from homeassistant import config_entries
 from homeassistant.core import HomeAssistant
-from homeassistant.data_entry_flow import FlowResult
+from homeassistant.data_entry_flow import AbortFlow, FlowResult
 from homeassistant.exceptions import HomeAssistantError
 
 from .const import DOMAIN, CONF_LINK_NAME, CONF_LINK_PASSWORD, PRODUCT_NAME
@@ -24,12 +25,22 @@ STEP_USER_DATA_SCHEMA = vol.Schema(
 )
 
 
-async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str, Any]:
+async def validate_input(
+    hass: HomeAssistant, data: dict[str, str]
+) -> tuple[dict[str, str], dict[str, str]]:
     """Validate the user input allows us to connect.
 
     Data has the keys from STEP_USER_DATA_SCHEMA with values provided by the user.
     """
-    # TODO validate the data can be used to set up a connection.
+    # If the user provided a URL, extract the last part of the URL path
+    validated_data = data
+    link_name_pattern = r"share/(\w+)"
+    given_link_name = data[CONF_LINK_NAME]
+    match = re.search(link_name_pattern, given_link_name)
+    if match:
+        validated_data[CONF_LINK_NAME] = match.group(1)
+    else:
+        validated_data[CONF_LINK_NAME] = given_link_name.strip()
 
     # If your PyPI package is not built with async, pass your methods
     # to the executor:
@@ -37,12 +48,15 @@ async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str,
     #     your_validate_func, data["username"], data["password"]
     # )
 
+    # Return info that you want to store in the config entry.
+    return ({"title": PRODUCT_NAME}, validated_data)
+
+
+async def test_connection(hass: HomeAssistant, data: dict[str, str]):
+    # Test the credentials by attempting to fetch
     hub = KmlFetch(hass, data[CONF_LINK_NAME], data.get(CONF_LINK_PASSWORD, None))
     if not await hub.authenticate():
         raise CannotConnect
-
-    # Return info that you want to store in the config entry.
-    return {"title": PRODUCT_NAME}
 
 
 class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
@@ -58,9 +72,12 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         errors: dict[str, str] = {}
         if user_input is not None:
             try:
+                (info, user_input) = await validate_input(self.hass, user_input)
                 await self.async_set_unique_id(user_input[CONF_LINK_NAME].lower())
                 self._abort_if_unique_id_configured()
-                info = await validate_input(self.hass, user_input)
+                test_connection(self.hass, user_input)
+            except AbortFlow as e:
+                raise e
             except CannotConnect:
                 errors["base"] = "cannot_connect"
             except LinkInvalid:
