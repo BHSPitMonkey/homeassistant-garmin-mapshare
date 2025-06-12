@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 from datetime import datetime
-from typing import cast
+from typing import cast, Callable
 
 from homeassistant.components.sensor import (
     SensorDeviceClass,
@@ -33,7 +33,7 @@ def datetime_from_feed(text: str) -> datetime:
     return dt
 
 
-SENSOR_TYPES: dict[str, tuple[SensorEntityDescription, callable, str]] = {
+SENSOR_TYPES: dict[str, tuple[SensorEntityDescription, Callable | None, str | None]] = {
     "Latitude": (
         SensorEntityDescription(
             key="latitude",
@@ -152,7 +152,7 @@ class MapShareSensor(MapShareBaseEntity, SensorEntity):
 
     entity_description: SensorEntityDescription
     kml_key: str
-    transformer: callable
+    transformer: Callable | None
 
     def __init__(
         self,
@@ -160,8 +160,8 @@ class MapShareSensor(MapShareBaseEntity, SensorEntity):
         coordinator: MapShareCoordinator,
         kml_key: str,
         description: SensorEntityDescription,
-        transformer: callable = None,
-        override_name: str = None,
+        transformer: Callable | None = None,
+        override_name: str | None = None,
     ) -> None:
         """Initialize MapShare sensor."""
         super().__init__(imei, coordinator)
