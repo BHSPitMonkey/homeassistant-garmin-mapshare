@@ -1,4 +1,5 @@
 """Test the entity classes."""
+
 from custom_components.garmin_mapshare.kml_fetch import parse_response
 
 

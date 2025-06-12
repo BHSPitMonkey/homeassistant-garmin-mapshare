@@ -5,14 +5,10 @@ import logging
 
 import async_timeout
 
-from homeassistant.components.light import LightEntity
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant, callback
-from homeassistant.exceptions import ConfigEntryAuthFailed
+from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import (
-    CoordinatorEntity,
     DataUpdateCoordinator,
-    UpdateFailed,
 )
 
 from .const import DOMAIN, CONF_LINK_NAME, CONF_LINK_PASSWORD

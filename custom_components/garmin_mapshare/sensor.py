@@ -22,8 +22,8 @@ from .entity import MapShareBaseEntity
 _LOGGER = logging.getLogger(__name__)
 
 
-def float_from_first_word(text: str) -> float:
-    if str == "":
+def float_from_first_word(text: str) -> float | None:
+    if text == "":
         return None
     return float(text.split()[0])
 

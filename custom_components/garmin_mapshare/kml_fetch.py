@@ -64,7 +64,7 @@ class KmlFetch:
             url = BASE_URL + self.link_name
 
             auth = None
-            if self.link_password != None:
+            if self.link_password is not None:
                 auth = ("", self.link_password)
 
             # Try to download (httpx?)
@@ -114,7 +114,7 @@ def parse_response(body: str):
             name = el.attrib["name"]
             value_el = el.find(f"{xmlns_prefix}value")
             if value_el is not None:
-                last_el = value_el
+                # last_el = value_el
                 value = value_el.text
             else:
                 value = ""
