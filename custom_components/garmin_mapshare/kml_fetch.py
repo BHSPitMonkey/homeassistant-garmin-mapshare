@@ -69,7 +69,9 @@ class KmlFetch:
 
             # Try to download (httpx?)
             async with self.httpx as client:
-                r = await client.get(url, auth=auth, follow_redirects=True)
+                r = await client.get(
+                    url, auth=auth, follow_redirects=True, timeout=60.0
+                )
 
             body = r.text
             status_code = r.status_code
@@ -77,10 +79,10 @@ class KmlFetch:
                 f"Feed URL {url} (auth: {bool(auth)}) returned HTTP status {status_code}, body length {len(body)}"
             )
 
-            if status_code == 401 and auth == None:
+            if status_code == 401 and auth is None:
                 raise PasswordRequired
 
-            if status_code == 401 and auth != None:
+            if status_code == 401 and auth is not None:
                 raise PasswordInvalid
 
             # Make sure response is not empty
