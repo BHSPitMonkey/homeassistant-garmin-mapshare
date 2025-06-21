@@ -70,7 +70,7 @@ class KmlFetch:
             # Try to download (httpx?)
             async with self.httpx as client:
                 r = await client.get(
-                    url, auth=auth, follow_redirects=True, timeout=60.0
+                    url, auth=auth, follow_redirects=True, timeout=300.0
                 )
 
             body = r.text
