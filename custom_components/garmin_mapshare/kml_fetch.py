@@ -47,6 +47,8 @@ class LinkInvalid(Exception):
 
 
 class KmlFetch:
+    """Retrieves and parses KML from the MapShare server"""
+
     def __init__(self, hass: HomeAssistant, link_name: str, link_password: str) -> None:
         self.httpx = get_async_client(hass)
         self.link_name = link_name
@@ -57,7 +59,7 @@ class KmlFetch:
         devices = await self.fetch_data()
         return len(devices) > 0
 
-    async def fetch_data(self):
+    async def fetch_data(self) -> dict[str, dict[str, str | int]]:
         if self.link_name == MOCK_LINK_NAME:
             return MOCK_VALUES
         else:
@@ -97,7 +99,7 @@ class KmlFetch:
         return parse_response(body)
 
 
-def parse_response(body: str):
+def parse_response(body: str) -> dict[str, dict[str, str | int]]:
     """Parse response and populate data key/value pairs"""
     _LOGGER.debug("Fetched KML data: %s", body)
     root = ET.fromstring(body)
@@ -120,7 +122,7 @@ def parse_response(body: str):
                 value = ""
             values[name] = value
         # Only keep this event if it's the latest one we've seen for this IMEI
-        imei = values["IMEI"]
+        imei: str = values["IMEI"]
         if imei not in all_devices or all_devices[imei]["Id"] < values["Id"]:
             all_devices[imei] = values
 
