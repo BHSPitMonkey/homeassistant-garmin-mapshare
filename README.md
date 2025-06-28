@@ -1,7 +1,9 @@
 # 🗺️  Garmin MapShare (Custom Integration for Home Assistant)
 
-[![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg?style=for-the-badge)](https://github.com/hacs/integration)
-![Version](https://img.shields.io/github/v/release/BHSPitMonkey/homeassistant-garmin-mapshare?style=for-the-badge)
+[![hacs][hacs-badge]][hacs-url]
+[![release][release-badge]][release-url]
+![build][build-badge]
+![installs][installs-badge]
 
 Integrate sensors in Home Assistant derived from one or more Garmin MapShare feeds
 
@@ -10,10 +12,6 @@ Integrate sensors in Home Assistant derived from one or more Garmin MapShare fee
 Given a user's MapShare link name and (if required) password, this custom component will periodically pull data from
 their KML feed and create a handful of entities in Home Assistant based on the state reported from an inReach
 satellite communicator (or multiple communicators).
-
-**Please note:** This does not use the username and password that the Garmin owner uses to log in. Instead, it uses
-the data from the user's MapShare profile on https://share.garmin.com/ assuming the owner has turned the MapShare
-feature "on" and shared the link with you.
 
 This allows you, as a friend or family member of one or more inReach owners, to track their status centrally without
 having to use the MapShare web interface (or to create automations based on Zones, for example—See the "Tips and Tricks" section below for details).
@@ -35,6 +33,11 @@ Each time you set up a new instance of this integration, the configuration flow 
 | ----------------- | --------------------------------------------------------------------------------------------------------------- |
 | Map Link Name     | The unique name from the MapShare link URL, e.g. `MyName` if the URL is `https://share.garmin.com/share/MyName` |
 | Map Link Password | The password used to protect the MapShare link (if password-protected)                                          |
+
+> [!IMPORTANT]  
+> **Please read: Do not use the username and password that the Garmin owner uses to log in.** This integration uses
+the data from the user's MapShare page on https://share.garmin.com/ assuming the owner has turned the MapShare
+feature "on" and shared the link with you.
 
 ## Platforms and Entities
 
@@ -71,15 +74,38 @@ can be enabled by the user from the device page if desired.
 
 ### Maps, Zones, and Automations
 
-By default, Home Assistant will show every device tracker entity on the default Map dashboard.
+By default, Home Assistant will show every device tracker entity on the included Map dashboard. This is the easiest
+way to see the location of your inReach on a map after configuring the integration.
 
 The default Map dashboard only show's the most recent location for each device, but you can also see a history of
 the entity's earlier locations by adding it to a Map card in any custom dashboard.
 
-In the default Map dashboard, you can create Zones representing different places of interest. Zones become especially
-useful in Automations; For example, you can create a Zone at major milestones along a backpacking route (summits,
-camps, trailheads, etc.) and use an Automation to notify you whenever the tracked device enters or exits any of these
-Zones.
+In your Home Assistant settings (**Areas, labels & zones** > **Zones**), you can create Zones representing different
+places of interest. Zones become especially useful in Automations; For example, you can create a Zone at major milestones
+along a backpacking route (summits, camps, trailheads, etc.) and use an Automation to notify you whenever the tracked
+device enters or exits any of these Zones (or when the tracked device's zone changes in general).
+
+#### Map Cards with Many Zones
+
+If you create lots of zones, the default Map card can be difficult to set up as it requires you to add every zone you
+wish to display on the map individually. To automate this, you can use the 
+[Auto Entities](https://github.com/thomasloven/lovelace-auto-entities) custom card which supports wildcards:
+
+```yaml
+type: custom:auto-entities
+card:
+  type: map
+  hours_to_show: 72
+filter:
+  include:
+    - options: {}
+      entity_id: device_tracker.inreach_*
+    - options: {}
+      entity_id: zone.*
+  exclude:
+    - options: {}
+      state: unavailable
+```
 
 ### Map Icon Customization
 
@@ -96,7 +122,40 @@ homeassistant:
 
 Learn more about customizing entities: https://www.home-assistant.io/docs/configuration/customizing-devices/
 
+### Polling Interval
+
+This integration checks for updated data every 10 minutes by default. If you wish to change this, you can visit
+[the settings page for your Garmin MapShare integration](https://my.home-assistant.io/redirect/integration/?domain=garmin_mapshare)
+and disable automatic polling by choosing **System Options** in the overflow menu (under **Hubs**).
+
+To force a refresh, use the **Update entity** action on your inReach tracker entity. You can add a button to a
+dashboard to trigger this action manually / on-demand, or create an Automation to force updates on a custom schedule.
+
+> [!WARNING]  
+> inReach devices do not typically send tracking points frequently. Use discretion when polling in small time intervals,
+as it's possible that Garmin could restrict access from your IP address if you make requests too often.
+
+## How It Works
+
+In addition to the web-based UI, Garmin makes every MapShare link available as a 
+[KML feed](https://en.wikipedia.org/wiki/Keyhole_Markup_Language) (a machine-readable file format for geospatial data).
+This integration periodically polls (downloads) this feed every 10 minutes and extracts the data into Home Assistant entities.
+
 ## Development Status
 
 This integration is fairly feature-complete at this point. More translations and proper unit tests are most of what's
 missing. It's my first Home Assistant integration, and it shows. Pull requests are very welcome!
+
+<!-- Badges -->
+
+[hacs-url]: https://github.com/hacs/integration
+[hacs-badge]: https://img.shields.io/badge/hacs-default-orange.svg?style=for-the-badge
+[release-badge]: https://img.shields.io/github/v/release/BHSPitMonkey/homeassistant-garmin-mapshare?style=for-the-badge
+[build-badge]: https://img.shields.io/github/actions/workflow/status/BHSPitMonkey/homeassistant-garmin-mapshare/hassfest.yml?branch=main&style=for-the-badge
+[installs-badge]: https://img.shields.io/badge/dynamic/json?style=for-the-badge&color=41BDF5&logo=home-assistant&label=reported%20installs&cacheSeconds=15600&url=https://analytics.home-assistant.io/custom_integrations.json&query=$.garmin_mapshare.total
+
+<!-- References -->
+
+[home-assistant]: https://www.home-assistant.io/
+[hacs]: https://hacs.xyz
+[release-url]: https://github.com/BHSPitMonkey/homeassistant-garmin-mapshare/releases
